@@ -62,29 +62,48 @@ export default async function handler(req, res) {
   }
 
   // ROTA GET: Para buscar o ranking
-  if (req.method === 'GET') {
+    if (req.method === 'GET') {
     try {
       const { difficulty } = req.query;
 
-      if (!difficulty) {
-        return res.status(400).json({ error: "Parâmetro 'difficulty' é obrigatório." });
+      // LÓGICA ANTIGA: Se uma dificuldade específica for pedida, retorna o ranking dela.
+      // Isso mantém a funcionalidade anterior, caso você precise dela no futuro.
+      if (difficulty) {
+        const collectionRef = db.collection(`leaderboard-${difficulty}`);
+        const snapshot = await collectionRef.orderBy('score', 'desc').limit(10).get();
+        const leaderboard = snapshot.docs.map(doc => doc.data());
+        return res.status(200).json(leaderboard);
       }
 
-      const collectionRef = db.collection(`leaderboard-${difficulty}`);
-      
-      // Cria uma query para buscar os dados:
-      // 1. Ordena por 'score' em ordem decrescente (maior primeiro)
-      // 2. Limita aos 10 primeiros resultados
-      const snapshot = await collectionRef.orderBy('score', 'desc').limit(10).get();
+      // --- NOVA LÓGICA PARA O RANKING UNIFICADO ---
 
-      if (snapshot.empty) {
-        return res.status(200).json([]); // Retorna lista vazia se não houver scores
-      }
+      // 1. Define as coleções que vamos consultar.
+      const difficulties = ['easy', 'medium', 'hard'];
 
-      // Mapeia os documentos retornados para um formato de lista simples
-      const leaderboard = snapshot.docs.map(doc => doc.data());
+      // 2. Cria uma lista de "promessas" de busca no banco de dados.
+      //    Cada promessa vai buscar o TOP 10 de uma dificuldade.
+      const queryPromises = difficulties.map(diff =>
+        db.collection(`leaderboard-${diff}`).orderBy('score', 'desc').limit(10).get()
+      );
 
-      return res.status(200).json(leaderboard);
+      // 3. Executa todas as buscas em paralelo para ganhar tempo.
+      const snapshots = await Promise.all(queryPromises);
+
+      // 4. Junta todos os resultados em uma única lista.
+      let allScores = [];
+      snapshots.forEach(snapshot => {
+        snapshot.docs.forEach(doc => {
+          allScores.push(doc.data());
+        });
+      });
+
+      // 5. Ordena a lista unificada pela maior pontuação (score).
+      allScores.sort((a, b) => b.score - a.score);
+
+      // 6. Pega apenas os 10 melhores do ranking geral.
+      const top10Overall = allScores.slice(0, 10);
+
+      return res.status(200).json(top10Overall);
 
     } catch (error) {
       console.error('Erro ao carregar do Firestore:', error);
