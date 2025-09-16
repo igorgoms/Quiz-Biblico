@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bíblico</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e3a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* Azul muito claro */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #1e3a8a; /* Azul escuro */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1e40af;
+        }
+        .btn-secondary {
+            background-color: #facc15; /* Amarelo */
+            color: #422006;
+        }
+        .btn-secondary:hover {
+            background-color: #fde047;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="app-container" class="w-full max-w-4xl mx-auto">
+
+        <!-- TELA INICIAL -->
+        <div id="home-screen">
+            <header class="text-center mb-10">
+                <i data-lucide="book-open" class="mx-auto h-12 w-12 text-blue-900"></i>
+                <h1 class="text-4xl md:text-5xl font-bold text-blue-900 mt-4">Quiz Bíblico</h1>
+                <p class="text-slate-600 mt-2 text-lg">Teste seus conhecimentos sobre a Palavra de Deus e desafie outros fiéis</p>
+            </header>
+
+            <main>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div id="start-quiz-btn" class="card flex flex-col items-center justify-center text-center cursor-pointer bg-blue-900 text-white hover:bg-blue-800">
+                        <i data-lucide="play-circle" class="h-10 w-10 mb-3"></i>
+                        <h2 class="text-2xl font-bold">Começar Quiz</h2>
+                        <p>Responda perguntas bíblicas</p>
+                    </div>
+                    <div id="leaderboard-btn" class="card flex flex-col items-center justify-center text-center cursor-pointer bg-yellow-400 text-yellow-900 hover:bg-yellow-300">
+                         <i data-lucide="trophy" class="h-10 w-10 mb-3"></i>
+                        <h2 class="text-2xl font-bold">Ranking</h2>
+                        <p>Veja os melhores jogadores</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                    <div class="card">
+                        <i data-lucide="layers" class="mx-auto h-8 w-8 text-blue-600 mb-3"></i>
+                        <h3 class="font-bold text-lg">Múltiplos Níveis</h3>
+                        <p class="text-slate-500 text-sm">Fácil, médio e difícil para todos os conhecimentos</p>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="award" class="mx-auto h-8 w-8 text-yellow-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Sistema de Pontos</h3>
+                        <p class="text-slate-500 text-sm">Ganhe pontos por velocidade e precisão</p>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="shuffle" class="mx-auto h-8 w-8 text-green-600 mb-3"></i>
+                        <h3 class="font-bold text-lg">Perguntas Aleatórias</h3>
+                        <p class="text-slate-500 text-sm">Cada jogo é uma experiência única</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- TELA DE DIFICULDADE -->
+        <div id="difficulty-screen" class="hidden">
+            <header class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-blue-900">Selecione o Nível</h1>
+                <p class="text-slate-600 mt-2">Escolha o nível de dificuldade para começar o quiz.</p>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div data-difficulty="easy" class="card text-center cursor-pointer border-2 border-transparent hover:border-green-500 hover:bg-green-50">
+                    <i data-lucide="shield" class="mx-auto h-12 w-12 text-green-500 mb-3"></i>
+                    <h2 class="text-2xl font-bold text-green-700">Fácil</h2>
+                    <p class="text-slate-500 text-sm mt-1">Perguntas mais conhecidas e de fácil memorização.</p>
+                </div>
+                <div data-difficulty="medium" class="card text-center cursor-pointer border-2 border-transparent hover:border-yellow-500 hover:bg-yellow-50">
+                    <i data-lucide="swords" class="mx-auto h-12 w-12 text-yellow-500 mb-3"></i>
+                    <h2 class="text-2xl font-bold text-yellow-700">Médio</h2>
+                    <p class="text-slate-500 text-sm mt-1">Perguntas que exigem um conhecimento intermediário.</p>
+                </div>
+                <div data-difficulty="hard" class="card text-center cursor-pointer border-2 border-transparent hover:border-red-500 hover:bg-red-50">
+                    <i data-lucide="gem" class="mx-auto h-12 w-12 text-red-500 mb-3"></i>
+                    <h2 class="text-2xl font-bold text-red-700">Difícil</h2>
+                    <p class="text-slate-500 text-sm mt-1">Perguntas desafiadoras sobre detalhes e contextos.</p>
+                </div>
+            </div>
+            <button class="btn-back mt-8 w-full text-center text-slate-500 hover:text-blue-900">&larr; Voltar ao Início</button>
+        </div>
+
+        <!-- TELA DO QUIZ -->
+        <div id="quiz-screen" class="hidden">
+            <div class="card max-w-2xl mx-auto">
+                <div id="loader" class="text-center py-10 hidden">
+                    <p class="text-slate-500">Carregando...</p>
+                </div>
+                <div id="quiz-content">
+                     <div class="flex justify-between items-center mb-4">
+                        <p class="text-sm text-slate-500">Pergunta <span id="question-number">1</span> de <span id="total-questions">10</span></p>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1 text-lg font-bold text-blue-900">
+                                 <i data-lucide="clock" class="w-5 h-5"></i>
+                                 <span id="timer-display">15</span>
+                            </div>
+                            <p class="text-lg font-bold text-blue-900">Pontos: <span id="score">0</span></p>
+                        </div>
+                    </div>
+                    <blockquote class="text-center bg-slate-50 p-4 rounded-lg my-6">
+                        <p id="question-text" class="text-lg md:text-xl italic">"O Senhor é o meu pastor; de nada terei falta."</p>
+                    </blockquote>
+                    <p class="text-center mb-4 font-semibold">De que livro é este versículo?</p>
+                    <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Opções serão inseridas aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TELA DE RESULTADO -->
+        <div id="result-screen" class="hidden">
+            <div class="card text-center max-w-md mx-auto">
+                <i data-lucide="trophy" class="mx-auto h-16 w-16 text-yellow-500 mb-4"></i>
+                <h1 class="text-3xl font-bold text-blue-900">Fim de Jogo!</h1>
+                <p class="text-slate-600 mt-2">Parabéns! Você completou o quiz.</p>
+                <p class="text-slate-500 mt-4">Sua pontuação final foi:</p>
+                <p id="final-score" class="text-6xl font-bold my-2 text-blue-900">1250</p>
+                <div class="flex flex-col gap-4 mt-6">
+                     <div class="flex items-center gap-2">
+                        <input type="text" id="player-name" placeholder="Digite seu nome para o ranking" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="submit-score-btn" class="btn btn-primary whitespace-nowrap">Salvar Pontuação</button>
+                    </div>
+                    <button id="restart-btn" class="btn btn-secondary">Jogar Novamente</button>
+                    <button class="btn-back text-slate-500 hover:text-blue-900">Voltar ao Início</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DO LEADERBOARD -->
+        <div id="leaderboard-screen" class="hidden">
+            <div class="card max-w-lg mx-auto">
+                <header class="text-center mb-6">
+                    <i data-lucide="trophy" class="mx-auto h-10 w-10 text-yellow-500"></i>
+                    <h1 class="text-3xl font-bold text-blue-900 mt-2">Ranking</h1>
+                    <p class="text-slate-500">Veja a pontuação dos melhores jogadores.</p>
+                </header>
+                <div class="space-y-2">
+                    <div class="grid grid-cols-4 text-left font-bold text-slate-500 text-sm border-b pb-2">
+                        <span>Posição</span>
+                        <span>Nome</span>
+                        <span>Nível</span>
+                        <span class="text-right">Pontuação</span>
+                    </div>
+                    <div id="leaderboard-list" class="space-y-2">
+                        <p class="text-center text-slate-500 pt-4">Carregando ranking...</p>
+                    </div>
+                </div>
+                <button class="btn-back mt-6 w-full text-center text-slate-500 hover:text-blue-900">&larr; Voltar ao Início</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="text-center text-sm text-slate-500 py-4 mt-auto w-full">
+        Desenvolvido por Igor Lucena Gomes | Outros Projetos: 
+        <a href="https://movie-sorter-gules.vercel.app/" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-600 hover:underline">
+            Movie Sorter
+        </a>
+    </footer>
+
+    <script type="module">
+        // --- BANCO DE PERGUNTAS LOCAL ---
+        const questionBank = {
+            "easy": [
+                { "quote": "No princípio, criou Deus os céus e a terra.", "correctAnswer": "Gênesis", "options": ["Apocalipse", "Salmos", "Gênesis", "Mateus"] },
+                { "quote": "O Senhor é o meu pastor; de nada terei falta.", "correctAnswer": "Salmos", "options": ["Provérbios", "Salmos", "Isaías", "Lucas"] },
+                { "quote": "Porque Deus amou ao mundo de tal maneira que deu o seu Filho unigênito...", "correctAnswer": "João", "options": ["Atos", "Gênesis", "Romanos", "João"] },
+                { "quote": "Disse-lhe Jesus: Eu sou o caminho, e a verdade, e a vida.", "correctAnswer": "João", "options": ["João", "Apocalipse", "Salmos", "Êxodo"] },
+                { "quote": "Eu sou o Alfa e o Ômega, o princípio e o fim.", "correctAnswer": "Apocalipse", "options": ["Levítico", "Apocalipse", "Jó", "Marcos"] },
+                { "quote": "Tudo posso naquele que me fortalece.", "correctAnswer": "Filipenses", "options": ["Filipenses", "Gálatas", "Salmos", "Gênesis"] },
+                { "quote": "O temor do Senhor é o princípio da sabedoria.", "correctAnswer": "Provérbios", "options": ["Eclesiastes", "Jó", "Provérbios", "Salmos"] },
+                { "quote": "Deleita-te também no Senhor, e ele te concederá o que deseja o teu coração.", "correctAnswer": "Salmos", "options": ["Salmos", "Isaías", "Jeremias", "1 Reis"] },
+                { "quote": "E conhecereis a verdade, e a verdade vos libertará.", "correctAnswer": "João", "options": ["Lucas", "Marcos", "Mateus", "João"] },
+                { "quote": "Porque pela graça sois salvos, por meio da fé...", "correctAnswer": "Efésios", "options": ["Gálatas", "Efésios", "Romanos", "Colossenses"] },
+                { "quote": "Ora, a fé é o firme fundamento das coisas que se esperam...", "correctAnswer": "Hebreus", "options": ["Tiago", "1 Pedro", "Hebreus", "1 João"] },
+                { "quote": "Portanto, ide, fazei discípulos de todas as nações...", "correctAnswer": "Mateus", "options": ["Marcos", "Lucas", "Atos", "Mateus"] },
+                { "quote": "Mas buscai primeiro o Reino de Deus, e a sua justiça...", "correctAnswer": "Mateus", "options": ["Mateus", "Marcos", "Lucas", "João"] },
+                { "quote": "Em tudo dai graças, porque esta é a vontade de Deus em Cristo Jesus para convosco.", "correctAnswer": "1 Tessalonicenses", "options": ["2 Coríntios", "1 Tessalonicenses", "Filipenses", "Efésios"] },
+                { "quote": "Lâmpada para os meus pés é tua palavra e luz, para o meu caminho.", "correctAnswer": "Salmos", "options": ["Provérbios", "Salmos", "Isaías", "Jó"] },
+                { "quote": "Se, pois, o Filho vos libertar, verdadeiramente, sereis livres.", "correctAnswer": "João", "options": ["Romanos", "Gálatas", "João", "Atos"] },
+                { "quote": "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.", "correctAnswer": "Mateus", "options": ["Marcos", "Mateus", "Lucas", "João"] },
+                { "quote": "O amor é paciente, é benigno; o amor não arde em ciúmes...", "correctAnswer": "1 Coríntios", "options": ["Romanos", "2 Coríntios", "1 Coríntios", "Efésios"] },
+                { "quote": "Criou, pois, Deus o homem à sua imagem...", "correctAnswer": "Gênesis", "options": ["Êxodo", "Gênesis", "Levítico", "Salmos"] },
+                { "quote": "Eu e o Pai somos um.", "correctAnswer": "João", "options": ["Mateus", "Marcos", "Lucas", "João"] },
+                { "quote": "O céu e a terra passarão, mas as minhas palavras não hão de passar.", "correctAnswer": "Mateus", "options": ["Marcos", "Lucas", "João", "Mateus"] },
+                { "quote": "Porque onde estiverem dois ou três reunidos em meu nome, aí estou eu no meio deles.", "correctAnswer": "Mateus", "options": ["Mateus", "Marcos", "Lucas", "Atos"] },
+                { "quote": "Deus é o nosso refúgio e fortaleza, socorro bem-presente na angústia.", "correctAnswer": "Salmos", "options": ["Salmos", "Provérbios", "Isaías", "Jó"] },
+                { "quote": "Porque um menino nos nasceu, um filho se nos deu...", "correctAnswer": "Isaías", "options": ["Jeremias", "Miqueias", "Isaías", "Salmos"] },
+                { "quote": "Bem-aventurados os puros de coração, porque eles verão a Deus.", "correctAnswer": "Mateus", "options": ["Lucas", "João", "Mateus", "Marcos"] },
+                { "quote": "Ninguém tem maior amor do que este: de dar alguém a sua vida pelos seus amigos.", "correctAnswer": "João", "options": ["João", "Romanos", "1 Coríntios", "Lucas"] },
+                { "quote": "Eis que faço novas todas as coisas.", "correctAnswer": "Apocalipse", "options": ["Isaías", "Apocalipse", "2 Coríntios", "Gênesis"] },
+                { "quote": "O Senhor te abençoe e te guarde.", "correctAnswer": "Números", "options": ["Deuteronômio", "Levítico", "Números", "Salmos"] },
+                { "quote": "Se confessarmos os nossos pecados, ele é fiel e justo para nos perdoar os pecados...", "correctAnswer": "1 João", "options": ["Romanos", "Tiago", "1 João", "Hebreus"] },
+                { "quote": "Crê no Senhor Jesus Cristo e serás salvo, tu e a tua casa.", "correctAnswer": "Atos", "options": ["Romanos", "João", "Atos", "Marcos"] },
+                { "quote": "Disse-lhe Jesus: Porque me viste, Tomé, creste; bem-aventurados os que não viram e creram!", "correctAnswer": "João", "options": ["Lucas", "Marcos", "João", "Mateus"] },
+                { "quote": "Tudo fez formoso em seu tempo; também pôs o mundo no coração do homem...", "correctAnswer": "Eclesiastes", "options": ["Provérbios", "Cânticos", "Jó", "Eclesiastes"] },
+                { "quote": "Honra a teu pai e a tua mãe, para que se prolonguem os teus dias na terra...", "correctAnswer": "Êxodo", "options": ["Levítico", "Deuteronômio", "Êxodo", "Gênesis"] },
+                { "quote": "Amarás, pois, o Senhor, teu Deus, de todo o teu coração, e de toda a tua alma, e de todo o teu poder.", "correctAnswer": "Deuteronômio", "options": ["Êxodo", "Deuteronômio", "Josué", "Salmos"] },
+                { "quote": "Não te mandei eu? Esforça-te e tem bom ânimo; não pasmes, nem te espantes, porque o Senhor, teu Deus, é contigo...", "correctAnswer": "Josué", "options": ["Juízes", "Números", "Josué", "Deuteronômio"] },
+                { "quote": "Clama a mim, e responder-te-ei e anunciar-te-ei coisas grandes e firmes, que não sabes.", "correctAnswer": "Jeremias", "options": ["Isaías", "Ezequiel", "Jeremias", "Daniel"] },
+                { "quote": "Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.", "correctAnswer": "1 Pedro", "options": ["2 Pedro", "Tiago", "1 Pedro", "Romanos"] },
+                { "quote": "O choro pode durar uma noite, mas a alegria vem pela manhã.", "correctAnswer": "Salmos", "options": ["Provérbios", "Jó", "Lamentações", "Salmos"] },
+                { "quote": "Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor...", "correctAnswer": "Jeremias", "options": ["Isaías", "Jeremias", "Ezequiel", "Lamentações"] },
+                { "quote": "Porque o mandamento é lâmpada, e a lei, luz; e as repreensões da correção são o caminho da vida.", "correctAnswer": "Provérbios", "options": ["Salmos", "Eclesiastes", "Provérbios", "Jó"] }
+            ],
+            "medium": [
+                { "quote": "O justo viverá pela sua fé.", "correctAnswer": "Habacuque", "options": ["Habacuque", "Sofonias", "Ageu", "Malaquias"] },
+                { "quote": "Porque o salário do pecado é a morte, mas o dom gratuito de Deus é a vida eterna...", "correctAnswer": "Romanos", "options": ["Gálatas", "Efésios", "Romanos", "Hebreus"] },
+                { "quote": "Alegrai-vos sempre no Senhor; outra vez digo: alegrai-vos.", "correctAnswer": "Filipenses", "options": ["Colossenses", "Filipenses", "1 Tessalonicenses", "2 Timóteo"] },
+                { "quote": "Mas o fruto do Espírito é: amor, alegria, paz, longanimidade, benignidade, bondade, fidelidade...", "correctAnswer": "Gálatas", "options": ["Efésios", "Gálatas", "Filipenses", "Romanos"] },
+                { "quote": "Ensina a criança no caminho em que deve andar, e, ainda quando for velho, não se desviará dele.", "correctAnswer": "Provérbios", "options": ["Eclesiastes", "Jó", "Provérbios", "Salmos"] },
+                { "quote": "Então, ouvi a voz do Senhor, que dizia: A quem enviarei, e quem há de ir por nós? Disse eu: eis-me aqui, envia-me a mim.", "correctAnswer": "Isaías", "options": ["Jeremias", "Ezequiel", "Daniel", "Isaías"] },
+                { "quote": "Porque para mim o viver é Cristo, e o morrer é lucro.", "correctAnswer": "Filipenses", "options": ["Romanos", "Filipenses", "1 Coríntios", "Gálatas"] },
+                { "quote": "Porque não temos que lutar contra carne e sangue, mas, sim, contra os principados...", "correctAnswer": "Efésios", "options": ["Colossenses", "Efésios", "1 Pedro", "Tiago"] },
+                { "quote": "Tudo tem o seu tempo determinado, e há tempo para todo o propósito debaixo do céu.", "correctAnswer": "Eclesiastes", "options": ["Provérbios", "Jó", "Cânticos", "Eclesiastes"] },
+                { "quote": "Porque a palavra de Deus é viva, e eficaz, e mais cortante do que qualquer espada de dois gumes...", "correctAnswer": "Hebreus", "options": ["Tiago", "Hebreus", "Apocalipse", "2 Pedro"] },
+                { "quote": "Porque todos pecaram e destituídos estão da glória de Deus.", "correctAnswer": "Romanos", "options": ["João", "Atos", "Romanos", "Gálatas"] },
+                { "quote": "Respondeu-lhe o Senhor: Marta! Marta! Andas inquieta e te preocupas com muitas coisas.", "correctAnswer": "Lucas", "options": ["Mateus", "Marcos", "Lucas", "João"] },
+                { "quote": "Disse o néscio no seu coração: Não há Deus.", "correctAnswer": "Salmos", "options": ["Provérbios", "Jó", "Salmos", "Eclesiastes"] },
+                { "quote": "Eis que estou à porta e bato; se alguém ouvir a minha voz e abrir a porta, entrarei em sua casa...", "correctAnswer": "Apocalipse", "options": ["João", "1 João", "Apocalipse", "Hebreus"] },
+                { "quote": "O meu Deus, segundo as suas riquezas, suprirá todas as vossas necessidades em glória, por Cristo Jesus.", "correctAnswer": "Filipenses", "options": ["Efésios", "Colossenses", "2 Coríntios", "Filipenses"] },
+                { "quote": "Agrada-se o Senhor dos que o temem e dos que esperam na sua misericórdia.", "correctAnswer": "Salmos", "options": ["Salmos", "Provérbios", "Isaías", "Jó"] },
+                { "quote": "Porque o Filho do Homem veio buscar e salvar o que se havia perdido.", "correctAnswer": "Lucas", "options": ["Mateus", "Marcos", "Lucas", "João"] },
+                { "quote": "Portanto, agora, nenhuma condenação há para os que estão em Cristo Jesus...", "correctAnswer": "Romanos", "options": ["Gálatas", "Efésios", "Romanos", "Hebreus"] },
+                { "quote": "Sabemos que todas as coisas cooperam para o bem daqueles que amam a Deus...", "correctAnswer": "Romanos", "options": ["1 Coríntios", "Efésios", "Filipenses", "Romanos"] },
+                { "quote": "Aquele que nem mesmo a seu próprio Filho poupou, antes, o entregou por todos nós...", "correctAnswer": "Romanos", "options": ["João", "Romanos", "Hebreus", "1 Pedro"] },
+                { "quote": "E não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento...", "correctAnswer": "Romanos", "options": ["Gálatas", "Efésios", "Filipenses", "Romanos"] },
+                { "quote": "O coração alegre aformoseia o rosto, mas, pela dor do coração, o espírito se abate.", "correctAnswer": "Provérbios", "options": ["Salmos", "Eclesiastes", "Jó", "Provérbios"] },
+                { "quote": "As muitas águas não poderiam apagar este amor, nem os rios, afogá-lo...", "correctAnswer": "Cânticos", "options": ["Provérbios", "Eclesiastes", "Lamentações", "Cânticos"] },
+                { "quote": "Dar-vos-ei coração novo e porei dentro de vós espírito novo...", "correctAnswer": "Ezequiel", "options": ["Isaías", "Jeremias", "Ezequiel", "Daniel"] },
+                { "quote": "Mas, buscai primeiro o Reino de Deus, e a sua justiça, e todas essas coisas vos serão acrescentadas.", "correctAnswer": "Mateus", "options": ["Marcos", "Lucas", "João", "Mateus"] },
+                { "quote": "Então, disse o Senhor a Moisés: Por que clamas a mim? Dize aos filhos de Israel que marchem.", "correctAnswer": "Êxodo", "options": ["Gênesis", "Levítico", "Números", "Êxodo"] },
+                { "quote": "Ainda que eu andasse pelo vale da sombra da morte, não temeria mal algum, porque tu estás comigo...", "correctAnswer": "Salmos", "options": ["Jó", "Isaías", "Salmos", "Provérbios"] },
+                { "quote": "Rendei graças ao Senhor, porque ele é bom, porque a sua misericórdia dura para sempre.", "correctAnswer": "Salmos", "options": ["Crônicas", "Esdras", "Neemias", "Salmos"] },
+                { "quote": "Porque a nossa leve e momentânea tribulação produz para nós um peso eterno de glória mui excelente.", "correctAnswer": "2 Coríntios", "options": ["Romanos", "1 Coríntios", "2 Coríntios", "Gálatas"] },
+                { "quote": "Porque, onde estiver o vosso tesouro, aí estará também o vosso coração.", "correctAnswer": "Mateus", "options": ["Marcos", "Lucas", "Mateus", "João"] },
+                { "quote": "E, se o Espírito daquele que dos mortos ressuscitou a Jesus habita em vós, aquele que dos mortos ressuscitou a Cristo também vivificará o vosso corpo mortal...", "correctAnswer": "Romanos", "options": ["1 Coríntios", "Gálatas", "Romanos", "Efésios"] },
+                { "quote": "Porque somos feitura sua, criados em Cristo Jesus para as boas obras...", "correctAnswer": "Efésios", "options": ["Gálatas", "Filipenses", "Colossenses", "Efésios"] },
+                { "quote": "Não que já a tenha alcançado ou que seja perfeito; mas prossigo para alcançar aquilo para o que fui também preso por Cristo Jesus.", "correctAnswer": "Filipenses", "options": ["Efésios", "Colossenses", "Filipenses", "1 Tessalonicenses"] },
+                { "quote": "Porque há um só Deus e um só mediador entre Deus e os homens, Jesus Cristo, homem.", "correctAnswer": "1 Timóteo", "options": ["2 Timóteo", "Tito", "Hebreus", "1 Timóteo"] },
+                { "quote": "Toda Escritura divinamente inspirada é proveitosa para ensinar, para redarguir, para corrigir, para instruir em justiça.", "correctAnswer": "2 Timóteo", "options": ["1 Timóteo", "Tito", "2 Timóteo", "Hebreus"] },
+                { "quote": "Revesti-vos, pois, como eleitos de Deus, santos e amados, de entranhas de misericórdia, de benignidade, humildade, mansidão, longanimidade.", "correctAnswer": "Colossenses", "options": ["Efésios", "Filipenses", "Colossenses", "Gálatas"] },
+                { "quote": "Mas Deus prova o seu amor para conosco em que Cristo morreu por nós, sendo nós ainda pecadores.", "correctAnswer": "Romanos", "options": ["João", "Atos", "Romanos", "Gálatas"] },
+                { "quote": "Ora, sem fé é impossível agradar-lhe, porque é necessário que aquele que se aproxima de Deus creia que ele existe e que é galardoador dos que o buscam.", "correctAnswer": "Hebreus", "options": ["Tiago", "1 Pedro", "Hebreus", "Romanos"] },
+                { "quote": "Sujeitai-vos, pois, a Deus; resisti ao diabo, e ele fugirá de vós.", "correctAnswer": "Tiago", "options": ["1 Pedro", "2 Pedro", "Tiago", "Hebreus"] },
+                { "quote": "Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida.", "correctAnswer": "Provérbios", "options": ["Salmos", "Eclesiastes", "Jó", "Provérbios"] }
+            ],
+            "hard": [
+                { "quote": "Saudai Priscila e Áquila, meus cooperadores em Cristo Jesus.", "correctAnswer": "Romanos", "options": ["1 Coríntios", "Romanos", "Atos", "2 Timóteo"] },
+                { "quote": "A graça do Senhor Jesus seja com o vosso espírito.", "correctAnswer": "Filemom", "options": ["Tito", "Filemom", "2 João", "3 João"] },
+                { "quote": "Lembra-te do teu Criador nos dias da tua mocidade...", "correctAnswer": "Eclesiastes", "options": ["Cânticos", "Provérbios", "Eclesiastes", "Lamentações"] },
+                { "quote": "Nada façais por partidarismo ou vanglória, mas por humildade, considerando cada um os outros superiores a si mesmo.", "correctAnswer": "Filipenses", "options": ["Filipenses", "Colossenses", "Gálatas", "Efésios"] },
+                { "quote": "Combati o bom combate, completei a carreira, guardei a fé.", "correctAnswer": "2 Timóteo", "options": ["1 Timóteo", "Tito", "2 Timóteo", "Hebreus"] },
+                { "quote": "Melhor é o fim das coisas do que o princípio delas...", "correctAnswer": "Eclesiastes", "options": ["Jó", "Provérbios", "Eclesiastes", "Isaías"] },
+                { "quote": "Porque, assim como o corpo sem o espírito está morto, assim também a fé sem obras é morta.", "correctAnswer": "Tiago", "options": ["Hebreus", "1 Pedro", "Tiago", "Romanos"] },
+                { "quote": "Quem é o Mentiroso, senão aquele que nega que Jesus é o Cristo? É o anticristo esse mesmo que nega o Pai e o Filho.", "correctAnswer": "1 João", "options": ["2 João", "Judas", "2 Pedro", "1 João"] },
+                { "quote": "Ora, o homem natural não compreende as coisas do Espírito de Deus, porque lhe parecem loucura...", "correctAnswer": "1 Coríntios", "options": ["2 Coríntios", "Romanos", "Gálatas", "1 Coríntios"] },
+                { "quote": "E não vos embriagueis com vinho, em que há contenda, mas enchei-vos do Espírito.", "correctAnswer": "Efésios", "options": ["Gálatas", "Colossenses", "Efésios", "1 Tessalonicenses"] },
+                { "quote": "Porque a loucura de Deus é mais sábia do que os homens; e a fraqueza de Deus é mais forte do que os homens.", "correctAnswer": "1 Coríntios", "options": ["Romanos", "1 Coríntios", "2 Coríntios", "Hebreus"] },
+                { "quote": "Porque o Senhor repreende aquele a quem ama, assim como o pai, ao filho a quem quer bem.", "correctAnswer": "Provérbios", "options": ["Hebreus", "Jó", "Provérbios", "Salmos"] },
+                { "quote": "E, agora, por que te deténs? Levanta-te, e batiza-te, e lava os teus pecados, invocando o nome do Senhor.", "correctAnswer": "Atos", "options": ["Romanos", "Atos", "Mateus", "Marcos"] },
+                { "quote": "E em nenhum outro há salvação, porque também debaixo do céu nenhum outro nome há, dado entre os homens, pelo qual devamos ser salvos.", "correctAnswer": "Atos", "options": ["João", "Romanos", "Hebreus", "Atos"] },
+                { "quote": "Porque não me envergonho do evangelho de Cristo, pois é o poder de Deus para salvação de todo aquele que crê...", "correctAnswer": "Romanos", "options": ["1 Coríntios", "Gálatas", "Romanos", "Efésios"] },
+                { "quote": "Porque o mistério da injustiça já opera; somente há um que, agora, resiste até que do meio seja tirado.", "correctAnswer": "2 Tessalonicenses", "options": ["1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "Apocalipse"] },
+                { "quote": "Porque três são os que testificam no céu: o Pai, a Palavra e o Espírito Santo; e estes três são um.", "correctAnswer": "1 João", "options": ["João", "1 João", "Mateus", "Apocalipse"] },
+                { "quote": "Amados, não creiais em todo espírito, mas provai se os espíritos são de Deus...", "correctAnswer": "1 João", "options": ["1 Coríntios", "Tiago", "1 João", "Judas"] },
+                { "quote": "Saudai a Trifena e a Trifosa, as quais trabalham no Senhor. Saudai à amada Pérside, que muito trabalhou no Senhor.", "correctAnswer": "Romanos", "options": ["Filipenses", "Romanos", "1 Coríntios", "Filemom"] },
+                { "quote": "Mas o nosso Deus está nos céus e faz tudo o que lhe apraz.", "correctAnswer": "Salmos", "options": ["Isaías", "Jó", "Salmos", "Daniel"] },
+                { "quote": "E, havendo aberto o sétimo selo, fez-se silêncio no céu quase por meia hora.", "correctAnswer": "Apocalipse", "options": ["Daniel", "Ezequiel", "Zacarias", "Apocalipse"] },
+                { "quote": "Jurou o Senhor e não se arrependerá: Tu és sacerdote eternamente, segundo a ordem de Melquisedeque.", "correctAnswer": "Salmos", "options": ["Gênesis", "Hebreus", "Salmos", "Levítico"] },
+                { "quote": "O sol se converterá em trevas, e a lua, em sangue, antes que venha o grande e terrível Dia do Senhor.", "correctAnswer": "Joel", "options": ["Amós", "Obadias", "Miqueias", "Joel"] },
+                { "quote": "E da boca do dragão, e da boca da besta, e da boca do falso profeta vi saírem três espíritos imundos, semelhantes a rãs.", "correctAnswer": "Apocalipse", "options": ["Daniel", "Apocalipse", "Ezequiel", "Isaías"] },
+                { "quote": "E, se alguma coisa pedir-vos, dizei-lhe que o Senhor precisa deles; e logo os enviará.", "correctAnswer": "Marcos", "options": ["Mateus", "Lucas", "João", "Marcos"] },
+                { "quote": "Ora, o aguilhão da morte é o pecado, e a força do pecado é a lei.", "correctAnswer": "1 Coríntios", "options": ["Romanos", "Gálatas", "Hebreus", "1 Coríntios"] },
+                { "quote": "Porquanto, qualquer que, entre esta geração adúltera e pecadora, se envergonhar de mim e das minhas palavras, também o Filho do Homem se envergonhará dele...", "correctAnswer": "Marcos", "options": ["Mateus", "Lucas", "Marcos", "João"] },
+                { "quote": "E ninguém, acendendo uma candeia, a cobre com um vaso ou a põe debaixo da cama; mas põe-na no velador...", "correctAnswer": "Lucas", "options": ["Mateus", "Marcos", "João", "Lucas"] },
+                { "quote": "Porque, que aproveita ao homem granjear o mundo todo, se perder a sua alma?", "correctAnswer": "Marcos", "options": ["Mateus", "Lucas", "João", "Marcos"] },
+                { "quote": "Não saia da vossa boca nenhuma palavra torpe, mas só a que for boa para promover a edificação...", "correctAnswer": "Efésios", "options": ["Colossenses", "Gálatas", "Filipenses", "Efésios"] },
+                { "quote": "Porque o que duvida é semelhante à onda do mar, que é levada pelo vento e lançada de uma para outra parte.", "correctAnswer": "Tiago", "options": ["Hebreus", "1 Pedro", "Judas", "Tiago"] },
+                { "quote": "Pode, também, o etíope mudar a sua pele ou o leopardo, as suas manchas? Nesse caso, poderíeis fazer o bem, estando acostumados a fazer o mal.", "correctAnswer": "Jeremias", "options": ["Isaías", "Ezequiel", "Oséias", "Jeremias"] },
+                { "quote": "Respondeu, então, Satanás ao Senhor e disse: Pele por pele, e tudo quanto o homem tem dará pela sua vida.", "correctAnswer": "Jó", "options": ["Gênesis", "Salmos", "Provérbios", "Jó"] },
+                { "quote": "E, demais disto, filho meu, atenta: não há limite para fazer livros, e o muito estudar enfado é da carne.", "correctAnswer": "Eclesiastes", "options": ["Provérbios", "Cânticos", "Isaías", "Eclesiastes"] },
+                { "quote": "Aquele que furtava não furte mais; antes, trabalhe, fazendo com as mãos o que é bom...", "correctAnswer": "Efésios", "options": ["Colossenses", "1 Tessalonicenses", "Tito", "Efésios"] },
+                { "quote": "Raça de víboras, como podeis vós dizer boas coisas, sendo maus? Pois do que há em abundância no coração, disso fala a boca.", "correctAnswer": "Mateus", "options": ["Marcos", "Lucas", "João", "Mateus"] },
+                { "quote": "Porque, qual dos homens sabe as coisas do homem, senão o espírito do homem, que nele está? Assim também ninguém sabe as coisas de Deus, senão o Espírito de Deus.", "correctAnswer": "1 Coríntios", "options": ["Romanos", "2 Coríntios", "Gálatas", "1 Coríntios"] },
+                { "quote": "Mas os cães ladrarão às suas portas, os estranhos devorarão as suas vinhas...", "correctAnswer": "Miqueias", "options": ["Amós", "Jonas", "Naum", "Miqueias"] },
+                { "quote": "Porque Demas me desamparou, amando o presente século, e foi para Tessalônica; Crescente, para a Galácia, Tito, para a Dalmácia.", "correctAnswer": "2 Timóteo", "options": ["1 Timóteo", "Tito", "Filemom", "2 Timóteo"] },
+                { "quote": "Eu sou a rosa de Sarom, o lírio dos vales.", "correctAnswer": "Cânticos", "options": ["Isaías", "Provérbios", "Salmos", "Cânticos"] }
+            ]
+        };
+
+        const timeLimits = {
+            easy: 25,
+            medium: 20,
+            hard: 15
+        };
+
+        const questionCounts = {
+            easy: 10,
+            medium: 20,
+            hard: 30
+        };
+
+        // --- Seletores de Elementos DOM ---
+        const screens = { home: document.getElementById('home-screen'), difficulty: document.getElementById('difficulty-screen'), quiz: document.getElementById('quiz-screen'), result: document.getElementById('result-screen'), leaderboard: document.getElementById('leaderboard-screen'), };
+        const buttons = { start: document.getElementById('start-quiz-btn'), leaderboard: document.getElementById('leaderboard-btn'), submitScore: document.getElementById('submit-score-btn'), restart: document.getElementById('restart-btn'), back: document.querySelectorAll('.btn-back'), difficulty: document.querySelectorAll('#difficulty-screen [data-difficulty]'), };
+        const quizElements = { loader: document.getElementById('loader'), content: document.getElementById('quiz-content'), questionNumber: document.getElementById('question-number'), totalQuestions: document.getElementById('total-questions'), score: document.getElementById('score'), timerDisplay: document.getElementById('timer-display'), questionText: document.getElementById('question-text'), optionsContainer: document.getElementById('options-container'), };
+        const resultElements = { finalScore: document.getElementById('final-score'), playerName: document.getElementById('player-name'), };
+        const leaderboardList = document.getElementById('leaderboard-list');
+
+        // --- Estado do Jogo ---
+        let state = {
+            currentScreen: 'home',
+            difficulty: 'easy',
+            score: 0,
+            questionNumber: 0,
+            totalQuestions: 10,
+            timer: null,
+            timeLeft: 0,
+            correctAnswer: null,
+            usedQuestionIndexes: [],
+        };
+
+        // --- Lógica de Navegação ---
+        function showScreen(screenName) {
+            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+            if (screens[screenName]) {
+                screens[screenName].classList.remove('hidden');
+                state.currentScreen = screenName;
+            }
+        }
+
+        buttons.start.addEventListener('click', () => showScreen('difficulty'));
+        buttons.leaderboard.addEventListener('click', () => { showScreen('leaderboard'); loadLeaderboard(); });
+        buttons.back.forEach(btn => btn.addEventListener('click', () => showScreen('home')));
+        buttons.difficulty.forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.difficulty = btn.dataset.difficulty;
+                startQuiz();
+            });
+        });
+        buttons.restart.addEventListener('click', () => showScreen('difficulty'));
+        buttons.submitScore.addEventListener('click', submitScore);
+
+        // --- Lógica do Jogo ---
+        function startQuiz() {
+            state.score = 0;
+            state.questionNumber = 0;
+            state.usedQuestionIndexes = [];
+            state.totalQuestions = questionCounts[state.difficulty];
+            quizElements.totalQuestions.textContent = state.totalQuestions;
+            showScreen('quiz');
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (state.questionNumber >= state.totalQuestions) {
+                endQuiz();
+                return;
+            }
+            state.questionNumber++;
+            quizElements.questionNumber.textContent = state.questionNumber;
+            quizElements.score.textContent = state.score;
+            
+            const questionPool = questionBank[state.difficulty];
+            if (!questionPool || questionPool.length === 0) {
+                quizElements.content.innerHTML = `<p class="text-red-500 text-center">Não há perguntas para este nível de dificuldade.</p>`;
+                return;
+            }
+            
+            if (state.usedQuestionIndexes.length >= questionPool.length) {
+                // Se todas as perguntas já foram usadas, reinicia a lista para evitar loop infinito
+                state.usedQuestionIndexes = [];
+            }
+
+            let questionIndex;
+            do {
+                questionIndex = Math.floor(Math.random() * questionPool.length);
+            } while (state.usedQuestionIndexes.includes(questionIndex));
+            
+            state.usedQuestionIndexes.push(questionIndex);
+            const questionData = questionPool[questionIndex];
+
+            state.correctAnswer = questionData.correctAnswer;
+            
+            quizElements.questionText.textContent = `"${questionData.quote}"`;
+            quizElements.optionsContainer.innerHTML = '';
+            
+            const shuffledOptions = [...questionData.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'btn bg-slate-100 hover:bg-slate-200 text-slate-700';
+                button.textContent = option;
+                button.onclick = () => selectAnswer(button, option);
+                quizElements.optionsContainer.appendChild(button);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            const totalTime = timeLimits[state.difficulty];
+            state.timeLeft = totalTime;
+            quizElements.timerDisplay.textContent = state.timeLeft;
+            const timerWrapper = quizElements.timerDisplay.parentElement;
+            timerWrapper.classList.remove('text-red-600');
+            timerWrapper.classList.add('text-blue-900');
+
+            clearInterval(state.timer);
+            state.timer = setInterval(() => {
+                state.timeLeft--;
+                quizElements.timerDisplay.textContent = state.timeLeft;
+                
+                if (state.timeLeft < 6) {
+                    timerWrapper.classList.add('text-red-600');
+                    timerWrapper.classList.remove('text-blue-900');
+                }
+
+                if (state.timeLeft <= 0) {
+                    clearInterval(state.timer);
+                    selectAnswer(null, null); // Chama selectAnswer para finalizar a questão sem resposta
+                }
+            }, 1000);
+        }
+        
+        function selectAnswer(button, selectedOption) {
+            clearInterval(state.timer);
+            const isCorrect = selectedOption === state.correctAnswer;
+            const totalTime = timeLimits[state.difficulty];
+
+            Array.from(quizElements.optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === state.correctAnswer) {
+                    btn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
+                    btn.classList.add('bg-green-500', 'text-white');
+                } else {
+                    btn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
+                }
+            });
+
+            if (isCorrect) {
+                // Ganha 50 pontos base + 5 por segundo restante
+                state.score += 50 + (state.timeLeft * 5);
+            } else {
+                // Perde 3 pontos por segundo que passou
+                const penalty = (totalTime - state.timeLeft) * 3;
+                state.score = Math.max(0, state.score - penalty); // Garante que a pontuação não fique negativa
+                if(button) {
+                    button.classList.add('bg-red-600', 'text-white');
+                }
+            }
+            
+            quizElements.score.textContent = state.score;
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function endQuiz() {
+            resultElements.finalScore.textContent = state.score;
+            showScreen('result');
+        }
+
+        // --- Lógica do Leaderboard ---
+        async function submitScore() {
+            const playerName = resultElements.playerName.value.trim();
+            if (!playerName) {
+                resultElements.playerName.classList.add('border-red-500');
+                resultElements.playerName.placeholder = 'Nome é obrigatório!';
+                return;
+            }
+
+            buttons.submitScore.textContent = 'Enviando...';
+            buttons.submitScore.disabled = true;
+
+            try {
+                await fetch("/api/leaderboard", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: playerName,
+                        score: state.score,
+                        difficulty: state.difficulty, // "easy" | "medium" | "hard"
+                    }),
+                });
+
+                showScreen('leaderboard');
+                loadLeaderboard();
+            } catch (error) {
+                console.error("Erro ao salvar pontuação:", error);
+                alert("Não foi possível salvar sua pontuação.");
+            } finally {
+                buttons.submitScore.textContent = 'Salvar Pontuação';
+                buttons.submitScore.disabled = false;
+            }
+        }
+        
+        function getRankIndicator(index) {
+            if (index === 0) return `<i data-lucide="medal" class="w-5 h-5 text-yellow-500"></i>`;
+            if (index === 1) return `<i data-lucide="medal" class="w-5 h-5 text-slate-400"></i>`;
+            if (index === 2) return `<i data-lucide="medal" class="w-5 h-5 text-orange-400"></i>`;
+            return `<span class="font-bold w-5 text-center text-slate-500">${index + 1}</span>`;
+        }
+
+        function getDifficultyLabel(difficulty) {
+            switch(difficulty) {
+                case 'easy': return 'Fácil';
+                case 'medium': return 'Médio';
+                case 'hard': return 'Difícil';
+                default: return difficulty;
+            }
+        }
+
+        async function loadLeaderboard() {
+            leaderboardList.innerHTML = '<p class="text-center text-slate-500 pt-4">Carregando ranking...</p>';
+
+            try {
+                const resp = await fetch(`/api/leaderboard?difficulty=${encodeURIComponent(state.difficulty)}`);
+                const text = await resp.text(); // sempre pegar texto primeiro
+
+                if (!resp.ok) {
+                console.error('API retornou erro', resp.status, text);
+                leaderboardList.innerHTML = `<p class="text-center text-red-500 pt-4">Erro ao carregar ranking (${resp.status})</p>`;
+                return;
+                }
+
+                let scores;
+                try {
+                scores = JSON.parse(text);
+                } catch (err) {
+                console.error('Resposta inválida (não é JSON):', text, err);
+                leaderboardList.innerHTML = '<p class="text-center text-red-500 pt-4">Resposta inválida do servidor.</p>';
+                return;
+                }
+
+                if (!scores || scores.length === 0) {
+                leaderboardList.innerHTML = '<p class="text-center text-slate-500 pt-4">Ainda não há pontuações. Seja o primeiro!</p>';
+                return;
+                }
+
+                leaderboardList.innerHTML = scores.slice(0, 10).map((entry, index) => `
+                <div class="grid grid-cols-4 text-left items-center p-2 rounded-lg ${index % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
+                    <div class="flex items-center gap-2">${getRankIndicator(index)}</div>
+                    <span class="font-semibold truncate">${entry.name}</span>
+                    <span class="text-sm font-medium">${getDifficultyLabel(entry.difficulty)}</span>
+                    <span class="font-bold text-blue-800 text-right">${entry.score}</span>
+                </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Erro ao conectar na API:', error);
+                leaderboardList.innerHTML = '<p class="text-center text-red-500 pt-4">Erro de conexão ao carregar o ranking.</p>';
+            }
+        }
+
+        // --- Inicialização ---
+        function init() {
+            lucide.createIcons();
+            showScreen('home');
+        }
+
+        init();
+    </script>
+</body>
+</html>
+
