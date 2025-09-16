@@ -564,36 +564,39 @@
             leaderboardList.innerHTML = '<p class="text-center text-slate-500 pt-4">Carregando ranking...</p>';
 
             try {
-                const resp = await fetch(`/api/leaderboard?difficulty=${encodeURIComponent(state.difficulty)}`);
-                const text = await resp.text(); // sempre pegar texto primeiro
+                // MUDANÇA AQUI: Chamamos a API sem nenhum parâmetro para pedir o ranking geral
+                const resp = await fetch(`/api/leaderboard`); 
+                
+                // O resto da função continua exatamente igual, pois ela já sabe como mostrar o nível de cada score.
+                const text = await resp.text(); 
 
                 if (!resp.ok) {
-                console.error('API retornou erro', resp.status, text);
-                leaderboardList.innerHTML = `<p class="text-center text-red-500 pt-4">Erro ao carregar ranking (${resp.status})</p>`;
-                return;
+                    console.error('API retornou erro', resp.status, text);
+                    leaderboardList.innerHTML = `<p class="text-center text-red-500 pt-4">Erro ao carregar ranking (${resp.status})</p>`;
+                    return;
                 }
 
                 let scores;
                 try {
-                scores = JSON.parse(text);
+                    scores = JSON.parse(text);
                 } catch (err) {
-                console.error('Resposta inválida (não é JSON):', text, err);
-                leaderboardList.innerHTML = '<p class="text-center text-red-500 pt-4">Resposta inválida do servidor.</p>';
-                return;
+                    console.error('Resposta inválida (não é JSON):', text, err);
+                    leaderboardList.innerHTML = '<p class="text-center text-red-500 pt-4">Resposta inválida do servidor.</p>';
+                    return;
                 }
 
                 if (!scores || scores.length === 0) {
-                leaderboardList.innerHTML = '<p class="text-center text-slate-500 pt-4">Ainda não há pontuações. Seja o primeiro!</p>';
-                return;
+                    leaderboardList.innerHTML = '<p class="text-center text-slate-500 pt-4">Ainda não há pontuações. Seja o primeiro!</p>';
+                    return;
                 }
 
-                leaderboardList.innerHTML = scores.slice(0, 10).map((entry, index) => `
-                <div class="grid grid-cols-4 text-left items-center p-2 rounded-lg ${index % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
-                    <div class="flex items-center gap-2">${getRankIndicator(index)}</div>
-                    <span class="font-semibold truncate">${entry.name}</span>
-                    <span class="text-sm font-medium">${getDifficultyLabel(entry.difficulty)}</span>
-                    <span class="font-bold text-blue-800 text-right">${entry.score}</span>
-                </div>
+                leaderboardList.innerHTML = scores.map((entry, index) => `
+                    <div class="grid grid-cols-4 text-left items-center p-2 rounded-lg ${index % 2 === 0 ? 'bg-slate-50' : 'bg-white'}">
+                        <div class="flex items-center gap-2">${getRankIndicator(index)}</div>
+                        <span class="font-semibold truncate">${entry.name}</span>
+                        <span class="text-sm font-medium">${getDifficultyLabel(entry.difficulty)}</span>
+                        <span class="font-bold text-blue-800 text-right">${entry.score}</span>
+                    </div>
                 `).join('');
                 lucide.createIcons();
             } catch (error) {
